@@ -60,6 +60,7 @@ I Just Don't Understand You</property>
             <property name="can_focus">False</property>
             <property name="halign">center</property>
             <property name="spacing">20</property>
+            <property name="homogeneous">True</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
@@ -74,9 +75,8 @@ I Just Don't Understand You</property>
                       <object class="GtkToggleButton" id="control-repeat">
                         <property name="label" translatable="yes">repeat</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
                           <class name="icon"/>
@@ -92,9 +92,8 @@ I Just Don't Understand You</property>
                       <object class="GtkToggleButton" id="control-shuffle">
                         <property name="label" translatable="yes">shuffle</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="focus_on_click">False</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
                           <class name="icon"/>
@@ -115,7 +114,7 @@ I Just Don't Understand You</property>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
@@ -129,9 +128,8 @@ I Just Don't Understand You</property>
                   <object class="GtkButton" id="control-prev">
                     <property name="label" translatable="yes">skip_previous</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">False</property>
                     <property name="relief">none</property>
                     <style>
                       <class name="icon"/>
@@ -147,9 +145,8 @@ I Just Don't Understand You</property>
                   <object class="GtkButton" id="control-toggle">
                     <property name="label" translatable="yes">play_arrow</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">False</property>
                     <property name="relief">none</property>
                     <style>
                       <class name="icon"/>
@@ -165,9 +162,8 @@ I Just Don't Understand You</property>
                   <object class="GtkButton" id="control-next">
                     <property name="label" translatable="yes">skip_next</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="focus_on_click">False</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="receives_default">False</property>
                     <property name="relief">none</property>
                     <style>
                       <class name="icon"/>
@@ -193,9 +189,8 @@ I Just Don't Understand You</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkScale" id="control-volume">
-                    <property name="width_request">100</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can_focus">False</property>
                     <property name="adjustment">adjustment-volume</property>
                     <property name="round_digits">1</property>
                     <property name="draw_value">False</property>
@@ -208,9 +203,9 @@ I Just Don't Understand You</property>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">4</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -219,12 +214,6 @@ I Just Don't Understand You</property>
             <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>

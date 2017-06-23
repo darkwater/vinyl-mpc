@@ -1,4 +1,4 @@
-extern crate core;
+extern crate config;
 extern crate futures;
 extern crate gdk;
 extern crate gtk;
@@ -17,6 +17,8 @@ use gtk::{WidgetExt, ButtonExt, ToggleButtonExt};
 use mpd::idle::{Idle, Subsystem};
 use mpd::status::State;
 use relm::{Relm, RemoteRelm, Widget};
+use std::env;
+use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
@@ -183,14 +185,21 @@ impl Win {
 
 impl Widget for Win {
     type Model = Model;
-    type ModelParam = (String, u16);
+    type ModelParam = config::Config;
     type Msg = Msg;
     type Root = gtk::Window;
 
     // Return the initial model.
-    fn model((address, port): Self::ModelParam) -> Self::Model {
-        let mut mpd_ctrl = mpd::Client::connect((address.as_str(), port)).expect("unable to connect to mpd");
-        let mpd_idle = mpd::Client::connect((address.as_str(), port)).expect("unable to connect to mpd");
+    fn model(config: config::Config) -> Self::Model {
+        let config_mpd = config.get_table("mpd").expect("config: mpd must be a table");
+
+        let host = config_mpd.get("host").expect("config: missing mpd.host")
+            .clone().into_str().expect("config: invalid mpd.host");
+        let port = config_mpd.get("port").expect("config: missing mpd.host")
+            .clone().into_int().expect("config: invalid mpd.port") as u16;
+
+        let mut mpd_ctrl = mpd::Client::connect((host.as_str(), port)).expect("unable to connect to mpd");
+        let mpd_idle = mpd::Client::connect((host.as_str(), port)).expect("unable to connect to mpd");
 
         let status = mpd_ctrl.status().unwrap_or_default();
         let status_updated = PreciseTime::now();
@@ -334,5 +343,14 @@ impl Widget for Win {
 }
 
 fn main() {
-    relm::run::<Win>(("127.0.0.1".into(), 6600)).unwrap();
+    let mut config_path = PathBuf::from(env::var("HOME").unwrap_or(".".to_string()));
+    config_path.push(".config/vinyl/config.toml");
+
+    let mut settings = config::Config::default()
+        .merge(config::File::from_str(include_str!("../default_config.toml"), config::FileFormat::Toml))
+        .unwrap();
+
+    let _ = settings.merge(config::File::with_name(config_path.to_str().unwrap()));
+
+    relm::run::<Win>(settings).unwrap();
 }
