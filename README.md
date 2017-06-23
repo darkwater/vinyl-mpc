@@ -9,7 +9,7 @@ management etc.
 Screenshot
 ----------
 
-![a screenshot](https://novaember.com/s/8f9453/IAWT4X.png)
+![a screenshot](https://novaember.com/s/8f9453/b1SGIJ.png)
 
 Configuration
 -------------

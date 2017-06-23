@@ -81,18 +81,33 @@ where T: gtk::IsA<gtk::Object> {
 }
 
 struct UiElements {
-    ctrl_prev:    UiElement<gtk::Button>,
-    ctrl_next:    UiElement<gtk::Button>,
-    ctrl_toggle:  UiElement<gtk::Button>,
-    ctrl_repeat:  UiElement<gtk::ToggleButton>,
-    ctrl_shuffle: UiElement<gtk::ToggleButton>,
-    adj_seek:     UiElement<gtk::Adjustment>,
-    adj_volume:   UiElement<gtk::Adjustment>,
-    disp_cursong: UiElement<gtk::Label>,
+    ctrl_prev:     UiElement<gtk::Button>,
+    ctrl_next:     UiElement<gtk::Button>,
+    ctrl_toggle:   UiElement<gtk::Button>,
+    ctrl_repeat:   UiElement<gtk::ToggleButton>,
+    ctrl_shuffle:  UiElement<gtk::ToggleButton>,
+    adj_seek:      UiElement<gtk::Adjustment>,
+    adj_volume:    UiElement<gtk::Adjustment>,
+    disp_elapsed:  UiElement<gtk::Label>,
+    disp_cursong:  UiElement<gtk::Label>,
+    disp_duration: UiElement<gtk::Label>,
 }
 
 fn debug<T: std::fmt::Debug>(e: T) -> String {
     format!("{:?}", e)
+}
+
+fn format_time(dur: time::Duration) -> String {
+    if dur.num_hours() > 0 {
+        format!("{}:{:02}:{:02}",
+                dur.num_hours(),
+                dur.num_minutes() - dur.num_hours() * 60,
+                dur.num_seconds() - dur.num_minutes() * 60)
+    } else {
+        format!("{:02}:{:02}",
+                dur.num_minutes(),
+                dur.num_seconds() - dur.num_minutes() * 60)
+    }
 }
 
 impl Win {
@@ -159,26 +174,38 @@ impl Win {
 
         self.elems.adj_volume.block_signal(|a| a.set_value(model.status.volume as f64));
         self.elems.adj_seek.block_signal(|a| {
-            a.set_upper(match (model.status.duration, model.status.time) {
-                (Some(duration), _)             => duration.num_milliseconds() as f64 / 1000.0,
-                (_, Some((_elapsed, duration))) => duration.num_seconds() as f64,
-                _                               => 0.0,
-            });
+            a.set_upper(model.status.duration
+                        .or(model.status.time.map(|t| t.1))
+                        .map(|dur| dur.num_milliseconds() as f64 / 1000.0)
+                        .unwrap_or(0.0));
 
-            a.set_value(match (model.status.elapsed, model.status.time) {
-                (Some(elapsed), _)              => elapsed.num_milliseconds() as f64 / 1000.0,
-                (_, Some((elapsed, _duration))) => elapsed.num_seconds() as f64,
-                _                               => 0.0,
-            });
+            a.set_value(model.status.elapsed
+                        .or(model.status.time.map(|t| t.0))
+                        .map(|el| el.num_milliseconds() as f64 / 1000.0)
+                        .unwrap_or(0.0));
         });
+
+        self.elems.disp_elapsed.widget.set_label(&model.status.elapsed
+                                                 .or(model.status.time.map(|t| t.1))
+                                                 .map(format_time)
+                                                 .unwrap_or("".into()));
+
+        self.elems.disp_duration.widget.set_label(&model.status.duration
+                                                 .or(model.status.time.map(|t| t.1))
+                                                 .map(format_time)
+                                                 .unwrap_or("".into()));
     }
 
     fn tick(&self, model: &Model) {
         if let State::Play = model.status.state {
+            let elapsed = model.status.elapsed.or(model.status.time.map(|t| t.1)).unwrap()
+                + model.status_updated.to(PreciseTime::now());
+
             self.elems.adj_seek.block_signal(|a| {
-                a.set_value(model.status.elapsed.unwrap().num_milliseconds() as f64 / 1000.0
-                            + model.status_updated.to(PreciseTime::now()).num_milliseconds() as f64 / 1000.0);
+                a.set_value(elapsed.num_milliseconds() as f64 / 1000.0);
             });
+
+            self.elems.disp_elapsed.widget.set_label(&format_time(elapsed));
         }
     }
 }
@@ -248,14 +275,16 @@ impl Widget for Win {
         }
 
         let mut elems = UiElements {
-            ctrl_prev:    get_object(&builder, "control-prev"),
-            ctrl_next:    get_object(&builder, "control-next"),
-            ctrl_toggle:  get_object(&builder, "control-toggle"),
-            ctrl_repeat:  get_object(&builder, "control-repeat"),
-            ctrl_shuffle: get_object(&builder, "control-shuffle"),
-            adj_seek:     get_object(&builder, "adjustment-seek"),
-            adj_volume:   get_object(&builder, "adjustment-volume"),
-            disp_cursong: get_object(&builder, "display-currentsong"),
+            ctrl_prev:     get_object(&builder, "control-prev"),
+            ctrl_next:     get_object(&builder, "control-next"),
+            ctrl_toggle:   get_object(&builder, "control-toggle"),
+            ctrl_repeat:   get_object(&builder, "control-repeat"),
+            ctrl_shuffle:  get_object(&builder, "control-shuffle"),
+            adj_seek:      get_object(&builder, "adjustment-seek"),
+            adj_volume:    get_object(&builder, "adjustment-volume"),
+            disp_elapsed:  get_object(&builder, "display-elapsed"),
+            disp_cursong:  get_object(&builder, "display-currentsong"),
+            disp_duration: get_object(&builder, "display-duration"),
         };
 
         let screen = window.get_screen().unwrap();
