@@ -13,9 +13,58 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkListStore" id="store-now-playing">
+    <columns>
+      <!-- column-name id -->
+      <column type="guint"/>
+      <!-- column-name artist -->
+      <column type="gchararray"/>
+      <!-- column-name album -->
+      <column type="gchararray"/>
+      <!-- column-name title -->
+      <column type="gchararray"/>
+      <!-- column-name length -->
+      <column type="gchararray"/>
+      <!-- column-name filename -->
+      <column type="gchararray"/>
+      <!-- column-name weight -->
+      <column type="gint"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">1</col>
+        <col id="1" translatable="yes">Röyksopp</col>
+        <col id="2" translatable="yes">The Inevitable End</col>
+        <col id="3" translatable="yes">I Just Don't Understand You</col>
+        <col id="4" translatable="yes">3:14</col>
+        <col id="5" translatable="yes">Röyksopp - The Inevitable End (Japan Edition) (FLAC)/CD2/06 - I Just Don't Understand You.flac</col>
+        <col id="6">0</col>
+      </row>
+      <row>
+        <col id="0">2</col>
+        <col id="1" translatable="yes">Röyksopp</col>
+        <col id="2" translatable="yes">The Inevitable End</col>
+        <col id="3" translatable="yes">Sordid Affair (feat. Ryan James of Man Without Country)</col>
+        <col id="4" translatable="yes">3:23</col>
+        <col id="5" translatable="yes">Röyksopp - The Inevitable End (Japan Edition) (FLAC)/CD2/07 - Sordid Affair (feat. Ryan James of Man Without Country).flac</col>
+        <col id="6">0</col>
+      </row>
+      <row>
+        <col id="0">3</col>
+        <col id="1" translatable="yes">Röyksopp</col>
+        <col id="2" translatable="yes">Senior</col>
+        <col id="3" translatable="yes">The Fear</col>
+        <col id="4" translatable="yes">5:12</col>
+        <col id="5" translatable="yes">Röyksopp - Senior (2010) [FLAC] {WOS080CD}/07 - The Fear.flac</col>
+        <col id="6">0</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkWindow" id="window">
+    <property name="width_request">600</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Vinyl</property>
+    <property name="icon_name">audio-x-generic</property>
     <property name="type_hint">dialog</property>
     <child>
       <object class="GtkBox">
@@ -24,7 +73,6 @@
         <property name="margin_left">20</property>
         <property name="margin_right">20</property>
         <property name="margin_top">10</property>
-        <property name="margin_bottom">10</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkBox">
@@ -36,7 +84,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">end</property>
-                <property name="label" translatable="yes">01:52</property>
+                <property name="label">01:52</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -50,9 +98,10 @@
                 <property name="can_focus">False</property>
                 <property name="margin_left">20</property>
                 <property name="margin_right">20</property>
-                <property name="label" translatable="yes">Bossfight
-Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
+                <property name="label">Royksopp → The Inevitable End
+Sordid Affair (feat. Ryan James of Man Without Country)</property>
                 <property name="justify">center</property>
+                <property name="ellipsize">end</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -66,7 +115,7 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">end</property>
-                <property name="label" translatable="yes">03:23</property>
+                <property name="label">03:23</property>
                 <property name="justify">right</property>
               </object>
               <packing>
@@ -85,7 +134,7 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
         <child>
           <object class="GtkScale" id="control-seek">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can_focus">True</property>
             <property name="adjustment">adjustment-seek</property>
             <property name="round_digits">1</property>
             <property name="draw_value">False</property>
@@ -100,24 +149,100 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="halign">center</property>
-            <property name="spacing">20</property>
+            <property name="margin_bottom">10</property>
             <child>
               <object class="GtkBox">
-                <property name="width_request">100</property>
+                <property name="width_request">50</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="hexpand">True</property>
+                <property name="spacing">20</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="width_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="halign">center</property>
+                        <property name="spacing">5</property>
+                        <child>
+                          <object class="GtkToggleButton" id="control-repeat">
+                            <property name="label">repeat</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="relief">none</property>
+                            <style>
+                              <class name="icon"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="control-shuffle">
+                            <property name="label">shuffle</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="relief">none</property>
+                            <style>
+                              <class name="icon"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="pack_type">end</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">center</property>
                     <property name="spacing">5</property>
                     <child>
-                      <object class="GtkToggleButton" id="control-repeat">
-                        <property name="label" translatable="yes">repeat</property>
+                      <object class="GtkButton" id="control-prev">
+                        <property name="label">skip_previous</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
@@ -131,10 +256,27 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkToggleButton" id="control-shuffle">
-                        <property name="label" translatable="yes">shuffle</property>
+                      <object class="GtkButton" id="control-toggle">
+                        <property name="label">play_arrow</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="relief">none</property>
+                        <style>
+                          <class name="icon"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="control-next">
+                        <property name="label">skip_next</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
@@ -149,68 +291,31 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="pack_type">end</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="spacing">5</property>
-                <child>
-                  <object class="GtkButton" id="control-prev">
-                    <property name="label" translatable="yes">skip_previous</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">False</property>
-                    <property name="relief">none</property>
-                    <style>
-                      <class name="icon"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="control-toggle">
-                    <property name="label" translatable="yes">play_arrow</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">False</property>
-                    <property name="relief">none</property>
-                    <style>
-                      <class name="icon"/>
-                    </style>
-                  </object>
-                  <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="control-next">
-                    <property name="label" translatable="yes">skip_next</property>
+                  <object class="GtkBox">
+                    <property name="width_request">100</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="receives_default">False</property>
-                    <property name="relief">none</property>
-                    <style>
-                      <class name="icon"/>
-                    </style>
+                    <property name="spacing">5</property>
+                    <child>
+                      <object class="GtkScale" id="control-volume">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="adjustment">adjustment-volume</property>
+                        <property name="round_digits">1</property>
+                        <property name="draw_value">False</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -227,20 +332,24 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
             </child>
             <child>
               <object class="GtkBox">
-                <property name="width_request">100</property>
+                <property name="width_request">50</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">5</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScale" id="control-volume">
+                  <object class="GtkButton" id="control-togglemain">
+                    <property name="label" translatable="yes">expand_more</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="adjustment">adjustment-volume</property>
-                    <property name="round_digits">1</property>
-                    <property name="draw_value">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">start</property>
+                    <property name="relief">none</property>
+                    <style>
+                      <class name="icon"/>
+                    </style>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
@@ -257,6 +366,369 @@ Farbror Melker Rixar Fiskdamm (Fastborn Cover)</property>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkRevealer" id="revealer-main">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="transition_duration">200</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_bottom">10</property>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="width_request">180</property>
+                    <property name="height_request">350</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="margin_right">5</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkViewport">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkListBox" id="list-sidebar">
+                            <property name="width_request">140</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="vexpand">True</property>
+                            <property name="selection_mode">browse</property>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">15</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">Now playing</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">False</property>
+                                <property name="activatable">False</property>
+                                <property name="selectable">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">15</property>
+                                    <property name="margin_top">8</property>
+                                    <property name="margin_bottom">2</property>
+                                    <property name="label" translatable="yes">Library</property>
+                                    <attributes>
+                                      <attribute name="weight" value="bold"/>
+                                    </attributes>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">25</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">Artists</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">25</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">Albums</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">25</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">All songs</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">False</property>
+                                <property name="activatable">False</property>
+                                <property name="selectable">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">15</property>
+                                    <property name="margin_top">8</property>
+                                    <property name="margin_bottom">2</property>
+                                    <property name="label" translatable="yes">Playlists</property>
+                                    <attributes>
+                                      <attribute name="weight" value="bold"/>
+                                    </attributes>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">25</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">Anime</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">25</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">Chiptunes</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_left">25</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="label" translatable="yes">Main</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <property name="width_request">100</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="width_request">25</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="label">add</property>
+                                        <attributes>
+                                          <attribute name="font-desc" value="Material Icons 16"/>
+                                        </attributes>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
+                                        <property name="margin_top">5</property>
+                                        <property name="margin_bottom">5</property>
+                                        <property name="label" translatable="yes">New playlist</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="width_request">100</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkTreeView" id="view-now-playing">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="model">store-now-playing</property>
+                        <property name="search_column">3</property>
+                        <property name="fixed_height_mode">True</property>
+                        <property name="show_expanders">False</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection">
+                            <property name="mode">multiple</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="resizable">True</property>
+                            <property name="sizing">fixed</property>
+                            <property name="fixed_width">50</property>
+                            <property name="title" translatable="yes">Artist</property>
+                            <property name="expand">True</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="xpad">5</property>
+                                <property name="ellipsize">end</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">1</attribute>
+                                <attribute name="weight">6</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="resizable">True</property>
+                            <property name="sizing">fixed</property>
+                            <property name="fixed_width">50</property>
+                            <property name="title" translatable="yes">Album</property>
+                            <property name="expand">True</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="xpad">5</property>
+                                <property name="ellipsize">end</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">2</attribute>
+                                <attribute name="weight">6</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="resizable">True</property>
+                            <property name="sizing">fixed</property>
+                            <property name="fixed_width">150</property>
+                            <property name="title" translatable="yes">Title</property>
+                            <property name="expand">True</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="xpad">5</property>
+                                <property name="ellipsize">end</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">3</attribute>
+                                <attribute name="weight">6</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="resizable">True</property>
+                            <property name="sizing">fixed</property>
+                            <property name="fixed_width">60</property>
+                            <property name="title" translatable="yes">Length</property>
+                            <property name="alignment">1</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="xpad">5</property>
+                                <property name="xalign">1</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">4</attribute>
+                                <attribute name="weight">6</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
           </packing>
         </child>
       </object>
