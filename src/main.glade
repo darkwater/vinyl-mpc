@@ -13,6 +13,43 @@
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkMenu" id="menu-now-playing">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="menu-now-playing-priority">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Set priority for this track. Tracks with priority will play before those without when shuffle is on.</property>
+        <property name="label" translatable="yes">_Priority</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu-now-playing-remove">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Remove this song from the queue</property>
+        <property name="label" translatable="yes">_Remove</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu-now-playing-goto-cursong">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Scroll to the currently playing song in the queue</property>
+        <property name="label" translatable="yes">Go to _current song</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+  </object>
   <object class="GtkListStore" id="store-now-playing">
     <columns>
       <!-- column-name id -->
@@ -134,7 +171,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
         <child>
           <object class="GtkScale" id="control-seek">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
             <property name="adjustment">adjustment-seek</property>
             <property name="round_digits">1</property>
             <property name="draw_value">False</property>
@@ -156,9 +193,6 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
-                <child>
-                  <placeholder/>
-                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -188,7 +222,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                           <object class="GtkToggleButton" id="control-repeat">
                             <property name="label">repeat</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
+                            <property name="can_focus">False</property>
                             <property name="receives_default">False</property>
                             <property name="relief">none</property>
                             <style>
@@ -205,7 +239,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                           <object class="GtkToggleButton" id="control-shuffle">
                             <property name="label">shuffle</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
+                            <property name="can_focus">False</property>
                             <property name="receives_default">False</property>
                             <property name="relief">none</property>
                             <style>
@@ -242,7 +276,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                       <object class="GtkButton" id="control-prev">
                         <property name="label">skip_previous</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can_focus">False</property>
                         <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
@@ -259,7 +293,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                       <object class="GtkButton" id="control-toggle">
                         <property name="label">play_arrow</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can_focus">False</property>
                         <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
@@ -276,7 +310,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                       <object class="GtkButton" id="control-next">
                         <property name="label">skip_next</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can_focus">False</property>
                         <property name="receives_default">False</property>
                         <property name="relief">none</property>
                         <style>
@@ -305,7 +339,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                     <child>
                       <object class="GtkScale" id="control-volume">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can_focus">False</property>
                         <property name="adjustment">adjustment-volume</property>
                         <property name="round_digits">1</property>
                         <property name="draw_value">False</property>
@@ -340,7 +374,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                   <object class="GtkButton" id="control-togglemain">
                     <property name="label" translatable="yes">expand_more</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can_focus">False</property>
                     <property name="receives_default">True</property>
                     <property name="halign">start</property>
                     <property name="relief">none</property>

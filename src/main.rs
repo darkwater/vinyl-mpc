@@ -13,11 +13,12 @@ extern crate tokio_timer;
 
 use futures::Stream;
 use gtk::{Builder, Continue, Inhibit};
-use gtk::{WidgetExt, WindowExt, ButtonExt, ToggleButtonExt, ToValue};
+use gtk::{WidgetExt, WindowExt, ButtonExt, ToggleButtonExt, MenuItemExt, ToValue};
 use mpd::idle::{Idle, Subsystem};
 use mpd::status::State;
 use relm::{EventStream, Relm, RemoteRelm, Widget};
 use std::env;
+use std::ops::Range;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
@@ -34,6 +35,14 @@ const NOW_PLAYING_TITLE:    u32 = 3;
 const NOW_PLAYING_LENGTH:   u32 = 4;
 const NOW_PLAYING_FILENAME: u32 = 5;
 const NOW_PLAYING_WEIGHT:   u32 = 6;
+
+macro_rules! connect_menuitem {
+    ($relm:expr, $menuitem:expr, $($n:ident),+ => $body:expr) => ({
+        let menuitem: gtk::MenuItem = $menuitem.expect("fatal bug: mismatching menu ids");
+        $( let $n = $n.clone(); )+
+        connect!($relm, menuitem, connect_activate(_), $body);
+    });
+}
 
 #[derive(Clone)]
 struct Model {
@@ -57,6 +66,8 @@ enum Ctrl {
     Switch(u32),
 }
 
+type SongSelection = Vec<Range<u32>>;
+
 #[derive(Debug, Msg)]
 enum Msg {
     StartListening,
@@ -65,6 +76,8 @@ enum Msg {
     UpdateUi,
     UpdateNowPlaying,
     ScrollToCurSong,
+    RemoveRanges(SongSelection),
+    Priority(SongSelection),
     SetMainVisible(bool),
     Tick,
     Ping,
@@ -125,11 +138,36 @@ fn format_time(dur: time::Duration) -> String {
     }
 }
 
+fn song_selection(selection: gtk::TreeSelection) -> SongSelection {
+    let paths = selection.get_selected_rows().0;
+    let mut positions = paths.iter().map(|n| n.get_indices()[0] as u32);
+
+    let first = positions.next().unwrap();
+    let mut ranges = vec![first..(first+1)];
+    for position in positions {
+        let mut add = true;
+
+        {
+            let range = ranges.last_mut().unwrap();
+            if range.end == position {
+                *range = range.start..(position+1);
+                add = false;
+            }
+        }
+
+        if add {
+            ranges.push(position..(position+1));
+        }
+    }
+
+    ranges
+}
+
 impl Win {
     fn handle_result(&self, result: Result<(), String>) {
         match result {
             Ok(_) => (),
-            Err(e) => println!("an error occurred: {}", e)
+            Err(e) => panic!("an error occurred: {}", e)
         }
     }
 
@@ -145,6 +183,9 @@ impl Win {
                     model.status_updated = PreciseTime::now();
                     model.current_song = mpd.currentsong().ok().unwrap_or_default();
                     self.update_ui(model);
+                },
+                Subsystem::Queue => {
+                    self.update_now_playing(&model);
                 },
                 _ => ()
             }
@@ -228,7 +269,7 @@ impl Win {
         }
     }
 
-    fn update_now_playing(&mut self, model: &Model) {
+    fn update_now_playing(&self, model: &Model) {
         {
             self.sto_nowplaying.clear();
             let mut iters = self.sto_nowplaying_iters.lock().unwrap();
@@ -280,6 +321,20 @@ impl Win {
             let mut path = gtk::TreePath::new();
             path.append_index(songpos.pos as i32);
             self.view_nowplaying.scroll_to_cell(&path, None, true, 0.5, 0.0);
+        }
+    }
+
+    fn prioritise(&self, ranges: SongSelection, model: &mut Model) {
+        let mut mpd = model.mpd_ctrl.lock().unwrap();
+        for range in ranges {
+            mpd.priority(range, 1).unwrap();
+        }
+    }
+
+    fn remove_ranges(&self, ranges: SongSelection, model: &mut Model) {
+        let mut mpd = model.mpd_ctrl.lock().unwrap();
+        for range in ranges {
+            mpd.delete(range).unwrap();
         }
     }
 
@@ -359,6 +414,8 @@ impl Widget for Win {
             Msg::UpdateUi          => self.update_ui(&model),
             Msg::UpdateNowPlaying  => self.update_now_playing(&model),
             Msg::ScrollToCurSong   => self.scroll_to_current_song(&model),
+            Msg::RemoveRanges(r)   => self.remove_ranges(r, &mut model),
+            Msg::Priority(r)       => self.prioritise(r, &mut model),
             Msg::SetMainVisible(b) => self.set_main_visible(b),
             Msg::Tick              => self.tick(&model),
             Msg::Ping              => model.mpd_ctrl.lock().unwrap().ping().unwrap(),
@@ -439,8 +496,41 @@ impl Widget for Win {
         let view_nowplaying: gtk::TreeView = builder.get_object("view-now-playing").unwrap();
         let sto_nowplaying_iters = Arc::new(Mutex::new(vec![]));
 
-        connect!(relm, view_nowplaying, connect_row_activated(_, path, _),
-                 Msg::Control(Ctrl::Switch(path.get_indices()[0] as u32)));
+        connect!(relm, view_nowplaying, connect_row_activated(view, path, _), {
+            view.get_selection().unselect_all();
+            Msg::Control(Ctrl::Switch(path.get_indices()[0] as u32))
+        });
+
+        let menu_nowplaying: gtk::Menu = builder.get_object("menu-now-playing").unwrap();
+        connect!(relm, view_nowplaying, connect_button_press_event(view, event) {
+            // view.get_selection().unselect_all();
+            // Msg::Control(Ctrl::Switch(path.get_indices()[0] as u32))
+            if event.get_button() == 3 {
+                menu_nowplaying.popup_easy(event.get_button(), event.get_time());
+
+                // only inhibit the click if there are multiple songs selected.
+                // otherwise, let the click go through to select the clicked song.
+                let inh = view.get_selection().count_selected_rows() > 1;
+                (None, Inhibit(inh))
+            } else {
+                (None, Inhibit(false))
+            }
+        });
+
+        connect_menuitem!(relm, builder.get_object("menu-now-playing-goto-cursong"), view_nowplaying => {
+            view_nowplaying.get_selection().unselect_all();
+            Msg::ScrollToCurSong
+        });
+
+        connect_menuitem!(relm, builder.get_object("menu-now-playing-remove"), view_nowplaying => {
+            let selection = song_selection(view_nowplaying.get_selection());
+            Msg::RemoveRanges(selection)
+        });
+
+        connect_menuitem!(relm, builder.get_object("menu-now-playing-priority"), view_nowplaying => {
+            let selection = song_selection(view_nowplaying.get_selection());
+            Msg::Priority(selection)
+        });
 
         connect!(relm, window, connect_delete_event(_, _) (Msg::Quit, Inhibit(false)));
 
