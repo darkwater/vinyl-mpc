@@ -385,6 +385,10 @@ impl Widget for Win {
         let mut mpd_ctrl = mpd::Client::connect((host.as_str(), port)).expect("unable to connect to mpd");
         let mpd_idle = mpd::Client::connect((host.as_str(), port)).expect("unable to connect to mpd");
 
+        if let Some(password) = config_mpd.get("password") {
+            mpd_ctrl.login(&password.clone().into_str().expect("config: invalid mpd.password"));
+        }
+
         let status = mpd_ctrl.status().unwrap_or_default();
         let status_updated = PreciseTime::now();
         let current_song = mpd_ctrl.currentsong().ok().unwrap_or_default();
@@ -534,10 +538,10 @@ impl Widget for Win {
 
         connect!(relm, window, connect_delete_event(_, _) (Msg::Quit, Inhibit(false)));
 
-        // select "Now playing" in the sidebar
-        let sidebar: gtk::ListBox = builder.get_object("list-sidebar").unwrap();
-        let first_row = sidebar.get_row_at_index(0).unwrap();
-        sidebar.select_row(&first_row);
+        // // select "Now playing" in the sidebar
+        // let sidebar: gtk::ListBox = builder.get_object("list-sidebar").unwrap();
+        // let first_row = sidebar.get_row_at_index(0).unwrap();
+        // sidebar.select_row(&first_row);
 
         window.resize(600, 120);
         window.show_all();

@@ -412,7 +412,7 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_bottom">10</property>
-                <child>
+                <!--child>
                   <object class="GtkScrolledWindow">
                     <property name="width_request">180</property>
                     <property name="height_request">350</property>
@@ -650,10 +650,11 @@ Sordid Affair (feat. Ryan James of Man Without Country)</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
-                </child>
+                </child-->
                 <child>
                   <object class="GtkScrolledWindow">
                     <property name="width_request">100</property>
+                    <property name="height_request">350</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
