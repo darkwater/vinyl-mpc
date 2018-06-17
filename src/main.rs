@@ -333,7 +333,7 @@ impl Win {
 
     fn remove_ranges(&self, ranges: SongSelection, model: &mut Model) {
         let mut mpd = model.mpd_ctrl.lock().unwrap();
-        for range in ranges {
+        for range in ranges.into_iter().rev() {
             mpd.delete(range).unwrap();
         }
     }
