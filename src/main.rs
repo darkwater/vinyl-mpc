@@ -336,6 +336,7 @@ impl Win {
         for range in ranges.into_iter().rev() {
             mpd.delete(range).unwrap();
         }
+        self.stream.emit(Msg::Update(vec![ Subsystem::Options ]));
     }
 
     fn set_main_visible(&self, visible: bool) {
@@ -345,12 +346,12 @@ impl Win {
             false => "expand_more",
         });
 
-        self.window.set_resizable(false);
-        let window = self.window.clone();
-        gtk::timeout_add(250, move || {
-            window.set_resizable(true);
-            Continue(false)
-        });
+        // self.window.set_resizable(false);
+        // let window = self.window.clone();
+        // gtk::timeout_add(250, move || {
+        //     window.set_resizable(true);
+        //     Continue(false)
+        // });
     }
 
     fn tick(&self, model: &Model) {
@@ -543,7 +544,8 @@ impl Widget for Win {
         // let first_row = sidebar.get_row_at_index(0).unwrap();
         // sidebar.select_row(&first_row);
 
-        window.resize(600, 120);
+        window.set_resizable(true);
+        window.set_size_request(600, 120);
         window.show_all();
 
         let stream = relm.stream().clone();
